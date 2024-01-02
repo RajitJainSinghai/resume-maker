@@ -1,0 +1,46 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Resume Result</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            max-width: 600px;
+            margin: 20px auto;
+        }
+    </style>
+</head>
+<body>
+    <h2>Resume Result</h2>
+
+    <div id="resume-result"></div>
+
+    <script>
+        // Extract resume data from the URL
+        const urlParams = new URLSearchParams(window.location.search);
+        const resumeData = urlParams.get('resume');
+
+        if (resumeData) {
+            const resume = JSON.parse(decodeURIComponent(resumeData));
+
+            // Display the resume data on the result page
+            const resumeResult = document.getElementById('resume-result');
+            resumeResult.innerHTML = `
+                <h3>${resume.name}</h3>
+                <p>Email: ${resume.email}</p>
+                <h4>Education</h4>
+                <p>${resume.education}</p>
+                <h4>Experience</h4>
+                <p>${resume.experience}</p>
+                <h4>Skills</h4>
+                <p>${resume.skills}</p>
+            `;
+        } else {
+            // Handle case where no resume data is provided
+            document.getElementById('resume-result').textContent = 'No resume data available.';
+        }
+    </script>
+</body>
+</html>

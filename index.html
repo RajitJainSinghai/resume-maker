@@ -1,0 +1,189 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Resume Maker</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            max-width: 60%;
+            margin: 0 auto;
+        }
+        button, a {
+            cursor: pointer;
+        }
+     
+        #saved-resumes {
+            margin-top: 20px;
+        }
+        .error-message {
+            color: red;
+        }
+.save_resume {
+    font-size: 15px;
+    width: 200px;
+    padding: 10px;
+    background: #5f9ea030;
+    border: 0;
+    border-radius: 10px;
+    color: #000000c4;
+}
+.label_resume {
+    width: 100%;
+    display: block;
+    font-size: 15px;
+}
+.data_fields, .data_fields_textarea {
+    width: 100%;
+    padding: 10px;
+    border-radius: 5px;
+    border: 1px solid #e5e5e5;
+    margin: 5px 0;
+    outline: none;
+    font-size: 13px;
+    text-transform: capitalize;
+}
+span.ownername {
+    text-transform: capitalize;
+}
+button.editanddelete {
+    width: 100px;
+    margin: 10px 0;
+    border: 0;
+    background: #5f9ea030;
+    padding: 10px;
+    border-radius: 5px;
+}
+.viewbtn {
+    color: black;
+    text-decoration: none;
+    text-transform: lowercase;
+    border-bottom: 1px solid black;
+    text-transform: capitalize;
+    margin-left: 5px;
+    font-size: 12px;
+}
+.viewbtn:active {
+    color: purple;
+}
+#resumes-list li {
+    border: 1px solid #e5e5e5;
+    margin: 10px 0;
+    padding: 10px;
+    border-radius: 10px;
+}
+    </style>
+</head>
+<body>
+    <div id="resume-form">
+        <h2>Resume Maker</h2>
+        <form id="form">
+            <label class="label_resume" for="name">Name:</label>
+            <input class="data_fields" type="text" id="name" required>
+
+            <label class="label_resume" for="email">Email:</label>
+            <input class="data_fields" type="email" id="email" required>
+
+            <label class="label_resume" for="education">Education:</label>
+            <textarea class="data_fields_textarea" id="education" rows="3" required></textarea>
+
+            <label class="label_resume" for="experience">Experience:</label>
+            <textarea class="data_fields_textarea" id="experience" rows="3" required></textarea>
+
+            <label class="label_resume" for="skills">Skills:</label>
+            <textarea class="data_fields_textarea" id="skills" rows="3" required></textarea>
+
+            <div id="error-message" class="error-message"></div>
+
+            <button class="save_resume" type="button" onclick="saveResume()">Save Resume</button>
+        </form>
+    </div>
+
+    <div id="saved-resumes">
+        <h2>Saved Resumes</h2>
+        <ul id="resumes-list"></ul>
+    </div>
+
+    <script>
+        function saveResume() {
+            const name = document.getElementById('name').value;
+            const email = document.getElementById('email').value;
+            const education = document.getElementById('education').value;
+            const experience = document.getElementById('experience').value;
+            const skills = document.getElementById('skills').value;
+
+            // Check if required fields are empty
+            if (!name || !email || !education || !experience || !skills) {
+                document.getElementById('error-message').textContent = 'Please fill all the required details.';
+                return;
+            }
+           
+
+            const resume = {
+                name,
+                email,
+                education,
+                experience,
+                skills,
+            };
+
+            let resumes = JSON.parse(localStorage.getItem('resumes')) || [];
+            resumes.push(resume);
+            localStorage.setItem('resumes', JSON.stringify(resumes));
+
+            document.getElementById('error-message').textContent = ''; // Clear error message
+            displaySavedResumes();
+            clearForm();
+        }
+
+        function displaySavedResumes() {
+            const resumesList = document.getElementById('resumes-list');
+            resumesList.innerHTML = '';
+
+            const resumes = JSON.parse(localStorage.getItem('resumes')) || [];
+
+            resumes.forEach((resume, index) => {
+                const listItem = document.createElement('li');
+                listItem.innerHTML = `
+                    <span class="ownername">${resume.name} Resume </span> <a class="viewbtn" href="result.html?resume=${encodeURIComponent(JSON.stringify(resume))}" target="_blank">Check your resume here.</a> <br>
+                    <button class="editanddelete" onclick="editResume(${index})">Edit</button>
+                    <button class="editanddelete" onclick="deleteResume(${index})">Delete</button> <br>
+                `;
+                resumesList.appendChild(listItem);
+            });
+        }
+
+        function editResume(index) {
+            const resumes = JSON.parse(localStorage.getItem('resumes')) || [];
+            const resume = resumes[index];
+
+            document.getElementById('name').value = resume.name;
+            document.getElementById('email').value = resume.email;
+            document.getElementById('education').value = resume.education;
+            document.getElementById('experience').value = resume.experience;
+            document.getElementById('skills').value = resume.skills;
+
+            resumes.splice(index, 1);
+            localStorage.setItem('resumes', JSON.stringify(resumes));
+
+            displaySavedResumes();
+        }
+
+        function deleteResume(index) {
+            const resumes = JSON.parse(localStorage.getItem('resumes')) || [];
+            resumes.splice(index, 1);
+            localStorage.setItem('resumes', JSON.stringify(resumes));
+
+            displaySavedResumes();
+        }
+
+        function clearForm() {
+            document.getElementById('form').reset();
+        }
+
+        // Initial display of saved resumes
+        displaySavedResumes();
+    </script>
+</body>
+</html>
